@@ -12,7 +12,13 @@ const Header = () => {
 
   return (
     <header className="header">
-      <Link to="/" className="navbar-brand fs-1 fst-italic mr-5">Home</Link>
+      <img
+        src="https://cdn.builder.io/api/v1/image/assets/TEMP/3b2dbb1b5f83bf50b00f22bca48668129ee31dc38adf54e60a68839cc1710d37?apiKey=f7a84a3244c847b980b62828a7d406c5&"
+        alt="Event logo"
+        // className="logo"
+        onClick={()=>navigate("/")}
+      />
+      {/* <Link to="/" className="navbar-brand fs-1 fst-italic mr-5">Home</Link> */}
       <div className="nav-group">
         <Link to="/" className="nav-item">Events</Link>
         <Link to="/" className="nav-item">Collaborate</Link>

@@ -10,7 +10,7 @@ import MyAccount from './components/MyAccount';
 import Verification from './components/Verification';
 import PasswordReset from './components/PasswordReset';
 import SideBar from './components/SideBar';
-
+import Viewer from './components/Viewer';
 
 function App() {
   return (
@@ -19,6 +19,7 @@ function App() {
       <div>
         <Routes>
           <Route exact path="/" element={<EventPage />}/>
+          <Route exact path='/view-stream' element = {<Viewer />}/>
           {/* <Route exact path="/LiveStreaming" element={<Stream />}/> */}
           <Route exact path="/SignUp" element={<Signup />}/>
           <Route exact path="/SideBar" element={<SideBar />}/>

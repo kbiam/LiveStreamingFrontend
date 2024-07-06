@@ -52,9 +52,11 @@ const SideBar = () => {
       <div className="row flex-nowrap">
         <div className="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark">
           <div className="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
-            <div className="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-              <span className="navbar-brand fs-1 fst-italic mr-5">Menu</span>
-            </div>
+          <img
+              src="https://cdn.builder.io/api/v1/image/assets/TEMP/3b2dbb1b5f83bf50b00f22bca48668129ee31dc38adf54e60a68839cc1710d37?apiKey=f7a84a3244c847b980b62828a7d406c5&"
+              alt="Event logo"
+              // className="logo"
+            />
             <ul className="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
               <li>
               <a onClick={() => setArea(0)} href="#" className="nav-link px-0 align-middle">

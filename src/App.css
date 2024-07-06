@@ -150,6 +150,17 @@
     letter-spacing: 1px;
     line-height: 150%;
     padding: 12px;
+    position: relative;
+    /* width: 70vw; */
+}
+
+.event-header .live-stream{
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    width: 100%;
 }
 
 @media (max-width: 991px) {

@@ -48,7 +48,7 @@ export default function Login() {
     <div><Header/></div>
     <div className="wrapper ">
         <div className="logo">
-            <img src={require('../websiteLogo.jpg')} alt=""/>
+            <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/80ab8f816310ce7fa073d00754708a74d9c99b5468bfcffb54dd15de7da82d1e?apiKey=f7a84a3244c847b980b62828a7d406c5&" alt=""/>
         </div>
         <div className="text-center m-4 name text-success">
             LiveStreaming
