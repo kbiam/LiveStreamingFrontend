@@ -11,6 +11,7 @@ import Verification from './components/Verification';
 import PasswordReset from './components/PasswordReset';
 import SideBar from './components/SideBar';
 import Viewer from './components/Viewer';
+import AddVideo from './components/AddVideo';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Routes>
           <Route exact path="/" element={<EventPage />}/>
           <Route exact path='/view-stream' element = {<Viewer />}/>
+          <Route exact path='/addVideo' element = {<AddVideo />}/>
           {/* <Route exact path="/LiveStreaming" element={<Stream />}/> */}
           <Route exact path="/SignUp" element={<Signup />}/>
           <Route exact path="/SideBar" element={<SideBar />}/>

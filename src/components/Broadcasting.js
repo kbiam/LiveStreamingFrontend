@@ -181,12 +181,8 @@ const Broadcasting = () => {
     :
     <div className="watch-on">
       {!isStreaming ? (
-        <button
-          className="account-btn"
-          id="live-stream"
-          onClick={startStreamingAndRecording}
-        >
-          Live Streaming
+        <button className="account-btn" id="live-stream" onClick={startStreamingAndRecording}>
+          StartLiveStreaming
         </button>
       ) : (
         <button

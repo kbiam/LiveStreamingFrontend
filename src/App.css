@@ -646,3 +646,92 @@ a {
     width: 100%; /* Ensures the video fills its container */
     height: auto; /* Maintains aspect ratio */
   }
+
+  
+  /* Add event css */
+
+.date-picker-wrapper {
+    margin-bottom: 1rem;
+  }
+  
+  .date-picker-wrapper input {
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 1rem;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+  }
+  
+  .date-picker-wrapper .react-date-picker__wrapper {
+    border: none;
+    box-shadow: none;
+  }
+  
+  .date-picker-wrapper .react-date-picker__inputGroup__input {
+    border: none;
+    outline: none;
+  }
+  
+  .date-picker-wrapper .react-date-picker__clear-button {
+    display: none;
+  }
+  
+
+  /* event card css */
+  .carousel-inner {
+    padding: 1em;
+  }
+  .card {
+    width: 18rem; /* Fixed width */
+    height: 22rem; /* Fixed height */
+    margin: 0 0.5em;
+    box-shadow: 2px 6px 8px 0 rgba(22, 22, 26, 0.18);
+    border: none;
+  }
+  .carousel-control-prev,
+  .carousel-control-next {
+    background-color: #e1e1e1;
+    width: 6vh;
+    height: 6vh;
+    border-radius: 50%;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  @media (min-width: 768px) {
+    .carousel-item {
+      margin-right: 0;
+      flex: 0 0 33.333333%;
+      display: block;
+    }
+    .carousel-inner {
+      display: flex;
+    }
+  }
+  .card .img-wrapper {
+    max-width: 100%;
+    height: 13em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .card img {
+    height: 12rem; /* Fixed height for images */
+    object-fit: cover; /* Ensure images cover the div without stretching */
+    max-height: 100%;
+  }
+  @media (max-width: 767px) {
+    .card .img-wrapper {
+      height: 17em;
+    }
+  }
+  
+  /* Specific styles for video cards */
+  .video-card .img-wrapper {
+    height: 13em;
+  }
+  .video-card video {
+    height: 12rem; /* Fixed height for videos */
+    object-fit: cover; /* Ensure videos cover the div without stretching */
+    max-height: 100%;
+  }
+  

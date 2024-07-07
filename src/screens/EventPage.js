@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Chat from '../components/Chat';
 import MediaPost from '../components/MediaPost';
-import EventPhotos from '../components/EventPhotos';
+import Events from '../components/Events';
 // import Functionallity from '../components/Functionallity';
 import Broadcasting from '../components/Broadcasting';
 import Viewer from '../components/Viewer'
@@ -10,6 +10,7 @@ import Header from '../components/Header';
 import { useNavigate } from 'react-router-dom';
 import SideBar from '../components/SideBar';
 import { socket } from '../socket';
+import Videos from '../components/Videos';
 
 const EventPage = () => {
   const location = useLocation()
@@ -26,7 +27,7 @@ const EventPage = () => {
         headers: {'Content-Type': 'application/json'}
     }).then(async (res) => {
         let response= await res.json();
-        console.log("data",response.data);
+        //console.log("data",response.data);
         if(response.success) setCurrentUser(response.data._id)
     })
   }
@@ -40,7 +41,7 @@ const EventPage = () => {
       headers:{'Content-Type':'application/json'}
       }).then(async (res) => {
         let response = await res.json();
-        console.log("admin",response)
+        //console.log("admin",response)
         if (response) setAdmin(response.admin);
       });
   }
@@ -123,16 +124,24 @@ const EventPage = () => {
                   />
                 </div>
               </div>
-              <h1 className="event-title">Functionallity</h1>
               {/* <Functionallity /> */}
               <Broadcasting />
-              <Viewer />
-              <h2 className="section-title">Event Photos</h2>
-              <EventPhotos />
+              <br/><br/><br/>
+              <h2 id="recordings" className="section-title">Recordings</h2>
+              <Videos />
+              <br/><br/><br/>
+              <h2 id="events" className="section-title">Events</h2>
+              <Events />
+              <br/><br/><br/>
+              <button className="account-btn mt-3" id="live-stream" style={{width:'40%'}} onClick={()=>{navigate("/addVideo")}}>
+                ShareVideo
+              </button>
+              <h2 id="viralvideos" className="section-title">ViralVideos</h2>
+              <Videos / >
+              
               <h2 className="section-title">Social Media Posts</h2>
               <MediaPost />
-              <h2 className="section-title">Event Photos</h2>
-              <EventPhotos />
+             
             </div>
           </section>
           <Chat />
