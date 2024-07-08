@@ -1,4 +1,5 @@
 import React from 'react';
+import Share from './Share';
 
 const VideoCard = ({ videoSrc, title, date, className }) => {
   return (
@@ -10,7 +11,9 @@ const VideoCard = ({ videoSrc, title, date, className }) => {
         <div className="card-body">
           <h5 className="card-title">{title}</h5>
           <p className="card-text"><strong>Date</strong>: {date}</p>
-          <a href="#" className="btn btn-primary">Share</a>
+          <Share
+           description={`I am sharing this interesting event happened !! Check out the details and join us here:`}
+          />
         </div>
       </div>
     </div>

@@ -734,4 +734,35 @@ a {
     object-fit: cover; /* Ensure videos cover the div without stretching */
     max-height: 100%;
   }
+
+/* Share.css */
+.share-container {
+    text-align: center;
+    border-radius: 10px;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+  
+  .share-icon-collections {
+    display: flex;
+    flex-direction: row; /* Display icons side by side */
+    justify-content: center; /* Center icons horizontally */
+    gap: 10px; /* Add space between icons */
+  }
+  
+  .share-icon {
+    cursor: pointer;
+    transition: transform 0.3s;
+  }
+  
+  .share-icon:hover {
+    transform: scale(1.1);
+  }
+  
+  .share-on-text {
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: #333;
+    font-weight: bold;
+  }
   

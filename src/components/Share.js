@@ -1,114 +1,36 @@
-import React, { useState } from "react";
-import Modal from "react-modal";
+// Share.js
+import React from 'react';
 import {
-  FaFacebookSquare,
-  FaTwitterSquare,
-  FaWhatsappSquare,
-  FaInstagramSquare,
-} from "react-icons/fa";
-import { FaRegCopy } from "react-icons/fa6";
+  FacebookShareButton,
+  LinkedinShareButton,
+  TwitterShareButton,
+  WhatsappShareButton,
+  FacebookIcon,
+  LinkedinIcon,
+  TwitterIcon,
+  WhatsappIcon,
+} from 'react-share';
 
-const Share = ({ streamUrl }) => {
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [copySuccess, setCopySuccess] = useState("");
 
-  const handleShare = () => {
-    setModalIsOpen(true);
-  };
-
-  const closeModal = () => {
-    setModalIsOpen(false);
-    setCopySuccess(""); // Reset copy success message when modal is closed
-  };
-
-  const handleCopyLink = () => {
-    if(!localStorage.getItem('token')){
-      alert("please logIn first!");
-      return;
-    }
-    navigator.clipboard.writeText(streamUrl).then(
-      () => {
-        setCopySuccess("Link copied!");
-        setTimeout(() => {
-          setCopySuccess("");
-        }, 2000); // Clear the message after 2 seconds
-      },
-      () => {
-        setCopySuccess("Failed to copy link");
-        setTimeout(() => {
-          setCopySuccess("");
-        }, 2000); // Clear the message after 2 seconds
-      }
-    );
-  };
-
+const Share = ({ description }) => {
+  const url = window.location.href;
   return (
-    <div className="share-component">
-      <button className="account-btn" onClick={handleShare}>
-        Generate Share Link
-      </button>
-      <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={closeModal}
-        contentLabel="Share Modal"
-        className="modal"
-        overlayClassName="modal-overlay"
-      >
-        <div className="modal-header">
-          <h2>Share Your Stream</h2>
-          <button className="close-button" onClick={closeModal}>
-            &times;
-          </button>
-        </div>
-        {streamUrl && (
-          <div className="modal-content">
-            <p>
-              Share this link:{" "}
-              <a href={streamUrl} target="_blank" rel="noopener noreferrer">
-                {streamUrl}
-              </a>
-            </p>
-            <div className="copy-link-container">
-              <button className="copy-link-btn" onClick={handleCopyLink}>
-                <FaRegCopy />
-              </button>
-              {copySuccess && (
-                <span className="copy-success">{copySuccess}</span>
-              )}
-            </div>
-            <div className="social-icons">
-              <a
-                href={`https://www.facebook.com/sharer/sharer.php?u=${streamUrl}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <FaFacebookSquare />
-              </a>
-              <a
-                href={`https://twitter.com/intent/tweet?url=${streamUrl}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <FaTwitterSquare />
-              </a>
-              <a
-                href={`https://wa.me/?text=${streamUrl}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <FaWhatsappSquare />
-              </a>
-              <a
-                href={`https://www.instagram.com/direct/new/?text=${streamUrl}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <FaInstagramSquare />
-              </a>
-            </div>
-          </div>
-        )}
-      </Modal>
+    <div className="share-container">
+      <div className="share-icon-collections">
+        <div className="mt-2 share-on-text">Share On</div>
+        <TwitterShareButton url={url} title={description} className="share-icon">
+          <TwitterIcon size={32} round />
+        </TwitterShareButton>
+        <WhatsappShareButton url={url} title={description} separator=":: " className="share-icon">
+          <WhatsappIcon size={32} round />
+        </WhatsappShareButton>
+         <LinkedinShareButton url={url} summary={description} className="share-icon">
+          <LinkedinIcon size={32} round />
+        </LinkedinShareButton>
+        <FacebookShareButton url={url} quote={description} className="share-icon">
+          <FacebookIcon size={32} round />
+        </FacebookShareButton>
+      </div>
     </div>
   );
 };
