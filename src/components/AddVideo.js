@@ -87,8 +87,9 @@ const AddVideo = () => {
   };
 
   return (
+    <><Header/>
     <div className='container m-3'>
-      <Header/>
+      
       <div className="upload">
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
@@ -107,6 +108,7 @@ const AddVideo = () => {
         </form>
       </div>
     </div>
+    </>
   );
 };
 

@@ -20,7 +20,7 @@ function App() {
       <div>
         <Routes>
           <Route exact path="/" element={<EventPage />}/>
-          <Route exact path='/view-stream' element = {<Viewer />}/>
+          <Route exact path='/view-stream' element = {<EventPage />}/>
           <Route exact path='/addVideo' element = {<AddVideo />}/>
           {/* <Route exact path="/LiveStreaming" element={<Stream />}/> */}
           <Route exact path="/SignUp" element={<Signup />}/>

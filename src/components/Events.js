@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import $ from 'jquery'; // Import jQuery
-import 'jquery-ui-dist/jquery-ui'; // Import jQuery UI
+import $ from 'jquery';
+import 'jquery-ui-dist/jquery-ui';
 import CardEvent from './CardEvent';
 
 const Events = () => {
@@ -22,39 +22,44 @@ const Events = () => {
 
   useEffect(() => {
     getEvents();
+  }, []);
 
-    var multipleCardCarousel = document.querySelector(
-      "#carouselExampleControls"
-    );
-    if (window.matchMedia("(min-width: 768px)").matches) {
-     
-      var carouselWidth = $(".carousel-inner")[0].scrollWidth;
-      var cardWidth = $(".carousel-item").width();
-      var scrollPosition = 0;
-      $("#carouselExampleControls .carousel-control-next").on("click", function () {
-        if (scrollPosition < carouselWidth - cardWidth * 4) {
-          scrollPosition += cardWidth;
-          $("#carouselExampleControls .carousel-inner").animate(
-            { scrollLeft: scrollPosition },
-            600
-          );
-        }
-      });
-      $("#carouselExampleControls .carousel-control-prev").on("click", function () {
-        if (scrollPosition > 0) {
-          scrollPosition -= cardWidth;
-          $("#carouselExampleControls .carousel-inner").animate(
-            { scrollLeft: scrollPosition },
-            600
-          );
-        }
-      });
-    } else {
-      $(multipleCardCarousel).addClass("slide");
-    }}, []);
+  useEffect(() => {
+    const handleCarousel = () => {
+      const multipleCardCarousel = document.querySelector("#carouselExampleControlsEvents");
+      if (window.matchMedia("(min-width: 768px)").matches) {
+        const carouselInner = $("#carouselExampleControlsEvents .carousel-inner");
+        const carouselWidth = carouselInner[0].scrollWidth;
+        const cardWidth = $("#carouselExampleControlsEvents .carousel-item").width();
+        let scrollPosition = 0;
+
+        $("#carouselExampleControlsEvents .carousel-control-next").off('click').on("click", function () {
+          if (scrollPosition < carouselWidth - cardWidth * 3) { // Adjusted to * 3 to consider 3 visible cards
+            scrollPosition += cardWidth;
+            carouselInner.animate({ scrollLeft: scrollPosition }, 600);
+          }
+        });
+
+        $("#carouselExampleControlsEvents .carousel-control-prev").off('click').on("click", function () {
+          if (scrollPosition > 0) {
+            scrollPosition -= cardWidth;
+            carouselInner.animate({ scrollLeft: scrollPosition }, 600);
+          }
+        });
+      } else {
+        $(multipleCardCarousel).addClass("slide");
+      }
+    };
+
+    handleCarousel();
+
+    $(window).resize(() => {
+      handleCarousel();
+    });
+  }, [eventData]);
 
   return (
-    <div id="carouselExampleControls" className="carousel">
+    <div id="carouselExampleControlsEvents" className="carousel">
       <div className="carousel-inner">
         {Array.isArray(eventData) && eventData.map((card, index) => (
           <CardEvent
@@ -66,11 +71,11 @@ const Events = () => {
           />
         ))}
       </div>
-      <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+      <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleControlsEvents" data-bs-slide="prev">
         <span className="carousel-control-prev-icon" aria-hidden="true"></span>
         <span className="visually-hidden">Previous</span>
       </button>
-      <button className="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+      <button className="carousel-control-next" type="button" data-bs-target="#carouselExampleControlsEvents" data-bs-slide="next">
         <span className="carousel-control-next-icon" aria-hidden="true"></span>
         <span className="visually-hidden">Next</span>
       </button>

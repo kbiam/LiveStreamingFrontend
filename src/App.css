@@ -255,6 +255,8 @@
     }
 }
 
+
+
 .watch-on {
     display: flex;
     margin-top: 24px;
@@ -730,10 +732,11 @@ a {
     height: 13em;
   }
   .video-card video {
-    height: 12rem; /* Fixed height for videos */
+    height: 12rem; /* Fixed height for videos in normal mode */
     object-fit: cover; /* Ensure videos cover the div without stretching */
     max-height: 100%;
   }
+  
 
 /* Share.css */
 .share-container {

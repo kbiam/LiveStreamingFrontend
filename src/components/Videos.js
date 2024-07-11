@@ -26,21 +26,21 @@ const Videos = () => {
 
   useEffect(() => {
     const handleCarousel = () => {
-      const multipleCardCarousel = document.querySelector("#carouselExampleControls");
+      const multipleCardCarousel = document.querySelector("#carouselExampleControlsVideos");
       if (window.matchMedia("(min-width: 768px)").matches) {
-        const carouselInner = $(".carousel-inner");
+        const carouselInner = $("#carouselExampleControlsVideos .carousel-inner");
         const carouselWidth = carouselInner[0].scrollWidth;
-        const cardWidth = $(".carousel-item").width();
+        const cardWidth = $("#carouselExampleControlsVideos .carousel-item").width();
         let scrollPosition = 0;
 
-        $("#carouselExampleControls .carousel-control-next").off('click').on("click", function () {
+        $("#carouselExampleControlsVideos .carousel-control-next").off('click').on("click", function () {
           if (scrollPosition < carouselWidth - cardWidth * 3) { // Adjusted to * 3 to consider 3 visible cards
             scrollPosition += cardWidth;
             carouselInner.animate({ scrollLeft: scrollPosition }, 600);
           }
         });
 
-        $("#carouselExampleControls .carousel-control-prev").off('click').on("click", function () {
+        $("#carouselExampleControlsVideos .carousel-control-prev").off('click').on("click", function () {
           if (scrollPosition > 0) {
             scrollPosition -= cardWidth;
             carouselInner.animate({ scrollLeft: scrollPosition }, 600);
@@ -60,7 +60,7 @@ const Videos = () => {
   }, [videoData]);
 
   return (
-    <div id="carouselExampleControls" className="carousel">
+    <div id="carouselExampleControlsVideos" className="carousel">
       <div className="carousel-inner">
         {Array.isArray(videoData) && videoData.map((card, index) => (
           <VideoCard
@@ -72,11 +72,11 @@ const Videos = () => {
           />
         ))}
       </div>
-      <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+      <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleControlsVideos" data-bs-slide="prev">
         <span className="carousel-control-prev-icon" aria-hidden="true"></span>
         <span className="visually-hidden">Previous</span>
       </button>
-      <button className="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+      <button className="carousel-control-next" type="button" data-bs-target="#carouselExampleControlsVideos" data-bs-slide="next">
         <span className="carousel-control-next-icon" aria-hidden="true"></span>
         <span className="visually-hidden">Next</span>
       </button>

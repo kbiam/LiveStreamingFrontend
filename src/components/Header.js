@@ -16,6 +16,13 @@ const Header = () => {
       section.scrollIntoView({ behavior: 'smooth' });
     }
   };
+  const shareVideo=()=>{
+    if(!localStorage.getItem('token')){
+      alert("please login first!!");
+      return;
+    }
+    navigate("/addVideo")
+  }
 
   return (
     <header className="header">
@@ -28,7 +35,7 @@ const Header = () => {
         <Link to="/" className="nav-item" onClick={() => scrollToSection('recordings')}>Recordings</Link>
         <Link to="/" className="nav-item" onClick={() => scrollToSection('events')}>Events</Link>
         <Link to="/" className="nav-item" onClick={() => scrollToSection('viralvideos')}>ViralVideos</Link>
-        <Link to="/addVideo" className="nav-item">AddVideo</Link>
+        <button onClick={shareVideo} className="btn nav-item">ShareVideo</button>
       </div>
       <div className="account-group">
         {!localStorage.getItem('token') ? (

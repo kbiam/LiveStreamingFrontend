@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
-import Share from "./Share";
-import { serverUrl } from "../helper/Helper";
 import { socket } from "../socket";
+import { useNavigate } from "react-router-dom";
+const serverUrl=process.env.REACT_APP_BASE_URL
 
 const Broadcasting = () => {
   const [streamUrl, setStreamUrl] = useState(null);
@@ -10,6 +10,9 @@ const Broadcasting = () => {
   const mediaRecorderRef = useRef(null);
   const chunksRef = useRef([]);
   const streamRef = useRef(null);
+  const peerRef = useRef();
+  let navigate=useNavigate();
+
   const [live,setLive]=useState(0);
   const [streamer,setStreamer]=useState("");
   const [currentUser,setCurrentUser]=useState("")
@@ -46,7 +49,7 @@ const Broadcasting = () => {
       body:JSON.stringify({id:authToken})
       }).then(async (res) => {
         let response = await res.json();
-        if (!response.success) alert(response.messege);
+        console.log(response);
       });
   }
   const stopLive=async ()=>{
@@ -57,16 +60,22 @@ const Broadcasting = () => {
       }).then(async (res) => {
         let response = await res.json();
         if (response.success) alert("Streaming ended");
+        window.location.reload();
       });
   }
   
   const startStreamingAndRecording = async () => {
-    startLive();
     if(!localStorage.getItem('token')){
       alert("please logIn first!");
       return;
     }
-    try {
+    navigate("/")
+    liveStatus();
+    startLive();
+    if(live==1){
+      alert("a user is already in live , you can't create meet")
+    }
+   try {
       const constraints = {
         video: {
           width: { ideal: 1280 },
@@ -80,18 +89,18 @@ const Broadcasting = () => {
         },
       };
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
-      streamRef.current = stream; // Save the stream reference
+      streamRef.current = stream;
 
-      // Start streaming
       const videoElement = document.getElementById("video");
       const peer = createPeer();
+      peerRef.current = peer;
       stream.getTracks().forEach((track) => peer.addTrack(track, stream));
       videoElement.srcObject = stream;
+
       const streamLink = `${serverUrl}/view-stream`;
       setStreamUrl(streamLink);
       setIsStreaming(true);
 
-      // Start recording
       const mediaRecorder = new MediaRecorder(stream, {
         mimeType: "video/webm; codecs=vp8,opus",
       });
@@ -105,6 +114,7 @@ const Broadcasting = () => {
     }
   };
 
+ 
   const stopStreamingAndDownload = () => {
     if (mediaRecorderRef.current) {
       mediaRecorderRef.current.stop();
@@ -117,15 +127,19 @@ const Broadcasting = () => {
         a.download = "recorded-video.webm";
         a.click();
 
-        // Cleanup
         chunksRef.current = [];
         setIsStreaming(false);
       };
     }
 
     if (streamRef.current) {
-      streamRef.current.getTracks().forEach((track) => track.stop()); // Stop all tracks of the stream
-      streamRef.current = null; // Clear the stream reference
+      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+    }
+
+    if (peerRef.current) {
+      peerRef.current.close();
+      peerRef.current = null;
     }
     stopLive();
   };
@@ -134,30 +148,36 @@ const Broadcasting = () => {
     const peer = new RTCPeerConnection({
       iceServers: [{ urls: "stun:stun.stunprotocol.org" }],
     });
+
+    peer.onicecandidate = handleICECandidateEvent;
     peer.onnegotiationneeded = () => handleNegotiationNeededEvent(peer);
+
     return peer;
   };
 
   const handleNegotiationNeededEvent = async (peer) => {
-    if(!localStorage.getItem('token')){
-      alert("please logIn first!");
-      return;
-    }
     try {
       const offer = await peer.createOffer();
       await peer.setLocalDescription(offer);
-
       const payload = { sdp: peer.localDescription };
-      const { data } = await axios.post(
-        `${serverUrl}/broadcast`,
-        payload
-      );
-      console.warn(data);
-
+      const { data } = await axios.post(`${serverUrl}/broadcast`, payload);
       const desc = new RTCSessionDescription(data.sdp);
       await peer.setRemoteDescription(desc);
     } catch (error) {
       console.error("Error handling negotiation:", error);
+    }
+  };
+
+  const handleICECandidateEvent = async (event) => {
+    if (event.candidate) {
+      try {
+        await axios.post(`${serverUrl}/ice-candidate`, {
+          candidate: event.candidate,
+          role: 'broadcaster'
+        });
+      } catch (error) {
+        console.error("Error sending ICE candidate:", error);
+      }
     }
   };
 
@@ -166,10 +186,10 @@ const Broadcasting = () => {
     liveStatus();
     fetchUser();
   }, [live]);
-  console.log(live , currentUser,streamer);
+  console.log("boroadcasting",live , currentUser,streamer);
   return (
     <>
-    {live && currentUser!=streamer?
+    {live==1 && currentUser!=streamer?
     <div className="watch-on">
       <button
           className="account-btn"

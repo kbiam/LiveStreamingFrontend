@@ -4,13 +4,14 @@ import MediaPost from '../components/MediaPost';
 import Events from '../components/Events';
 // import Functionallity from '../components/Functionallity';
 import Broadcasting from '../components/Broadcasting';
-import Viewer from '../components/Viewer'
+
 import { useLocation } from 'react-router-dom';
 import Header from '../components/Header';
 import { useNavigate } from 'react-router-dom';
 import SideBar from '../components/SideBar';
 import { socket } from '../socket';
 import Videos from '../components/Videos';
+import Viewer from '../components/Viewer';
 
 const EventPage = () => {
   const location = useLocation()
@@ -78,9 +79,15 @@ const EventPage = () => {
       });
   }
   const move=()=>{
-    if(!admin && live && currentUser!=streamer) navigate("/view-stream");
+    if(admin!=1 && live && currentUser!=streamer) navigate("/view-stream");
   }
-  
+  const shareVideo=()=>{
+    if(!localStorage.getItem('token')){
+      alert("please login first!!");
+      return;
+    }
+    navigate("/addVideo")
+  }
   
   useEffect(() => {
     fetchUser();
@@ -89,6 +96,7 @@ const EventPage = () => {
     liveStatus();
     move();
   }, [live , admin]);
+  console.log("eventPage",live , currentUser,streamer);
   return (
     <>
     {admin?<SideBar/>:<>
@@ -126,14 +134,23 @@ const EventPage = () => {
               </div>
               {/* <Functionallity /> */}
               <Broadcasting />
+              <Viewer/>
               <br/><br/><br/>
               <h2 id="recordings" className="section-title">Recordings</h2>
-              <Videos />
+              <div className="scrollable">
+                <div id="carouselExampleControlsVideos">
+                  <Videos />
+                </div>
+              </div>
               <br/><br/><br/>
               <h2 id="events" className="section-title">Events</h2>
-              <Events />
+              <div className="scrollable">
+                <div id="carouselExampleControlsEvents">
+                  <Events />
+                </div>
+              </div>
               <br/><br/><br/>
-              <button className="account-btn mt-3" id="live-stream" style={{width:'40%'}} onClick={()=>{navigate("/addVideo")}}>
+              <button className="account-btn mt-3" id="live-stream" style={{width:'40%'}} onClick={shareVideo}>
                 ShareVideo
               </button>
               <h2 id="viralvideos" className="section-title">ViralVideos</h2>
