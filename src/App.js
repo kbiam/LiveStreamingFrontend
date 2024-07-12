@@ -12,6 +12,7 @@ import PasswordReset from './components/PasswordReset';
 import SideBar from './components/SideBar';
 import Viewer from './components/Viewer';
 import AddVideo from './components/AddVideo';
+import SharePhoto from './components/SharePhoto';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           <Route exact path="/" element={<EventPage />}/>
           <Route exact path='/view-stream' element = {<EventPage />}/>
           <Route exact path='/addVideo' element = {<AddVideo />}/>
+          <Route exact path='/shareImage' element = {<SharePhoto />}/>
           {/* <Route exact path="/LiveStreaming" element={<Stream />}/> */}
           <Route exact path="/SignUp" element={<Signup />}/>
           <Route exact path="/SideBar" element={<SideBar />}/>

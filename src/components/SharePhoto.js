@@ -3,30 +3,29 @@ import React, { useEffect, useState } from 'react';
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import firebase from '../firebase';
 import { useNavigate } from 'react-router-dom';
+import Header from './Header';
 import DatePicker from 'react-date-picker';
 import 'react-date-picker/dist/DatePicker.css';
 import 'react-calendar/dist/Calendar.css';
 
-const AddEvent = () => {
+const SharePhoto = () => {
   const [img, setImg] = useState(null);
   const [imgPerc, setImgPerc] = useState(0);
   const [imageUrl, setImageUrl] = useState("");
   const [loading, setLoading] = useState(0);
-  const [date, setDate] = useState(null);
   const navigate = useNavigate();
-  const [eventName,setEvent]=useState("")
+  const [caption,setCaption]=useState("")
   const [userId,setUserId]=useState("");
   const authToken=localStorage.getItem('token');
   const fetchUser = async () => {
-    await fetch(`${process.env.REACT_APP_BASE_URL}/api/getUserDetails/${authToken}/${1}`, {
+    await fetch(`${process.env.REACT_APP_BASE_URL}/api/getUserDetails/${authToken}/${0}`, {
         method: 'GET',
         headers: {'Content-Type': 'application/json'}
     }).then(async (res) => {
         let response= await res.json();
         if(response.success) setUserId(response.data._id);
-        else alert(response.message)
     })
-}
+  }
 
   useEffect(() => {
     fetchUser();
@@ -36,27 +35,27 @@ const AddEvent = () => {
   const handleSubmit=(event)=>{
     event.preventDefault();
     if(!img || imgPerc!=100){
-      alert("image is uploading please wait");
-      return;
-  }
-    console.log(imageUrl,eventName,date,userId)
+        alert("image is uploading please wait");
+        return;
+    }
+    console.log(imageUrl,caption,userId)
     try {
       if(!img){
         alert("please add img");return;
       }
-      if(eventName.length==0){
-        alert("please add eventName");return;
+      if(caption.length==0){
+        alert("please add caption");return;
       }
       setLoading(1)
-      fetch(`${process.env.REACT_APP_BASE_URL}/api/addEvent`, {
+      fetch(`${process.env.REACT_APP_BASE_URL}/api/addImage`, {
           method: 'POST',
           headers:{
               'Content-Type':'application/json'
             },
-            body:JSON.stringify({name:eventName,userId:userId,imageUrl:imageUrl,date:date})
+            body:JSON.stringify({name:caption,userId:userId,imageUrl:imageUrl})
       }).then(response => response.json()).then(json => {
         if(json.success){
-          alert("Event Added SuccessFully!!")
+          alert("Image Shared SuccessFully!!")
         }
         else alert(json.message)
         setLoading(0)
@@ -96,19 +95,13 @@ const AddEvent = () => {
   };
 
   return (
-    <div className='m-3'>
+    <><Header/>
+    <div className='container m-3'>
       <form onSubmit={handleSubmit}>
         <div className="mb-3">
-          <label htmlFor="eventName" className="form-label">Event Name</label>
-          <input type="text" className="form-control" id="eventName" name="eventName" value={eventName} onChange={(e)=>{setEvent(e.target.value)}} />
+          <label htmlFor="caption" className="form-label">Caption</label>
+          <input type="text" className="form-control" id="caption" name="caption" value={caption} onChange={(e)=>{setCaption(e.target.value)}} />
         </div>
-        <div className="mb-3">
-          <label htmlFor="eventName" className="form-label">EventDate</label>
-            <div className="mb-3 date-picker-wrapper form-control">
-              <DatePicker onChange={setDate} value={date} />
-            </div>
-        </div>
-        
         <div>
           <label htmlFor="img">Image:</label> {imgPerc > 0 && `Uploading: ${imgPerc}%`}
           <br />
@@ -120,7 +113,8 @@ const AddEvent = () => {
         </button>
       </form>
     </div>
+    </>
   );
 };
 
-export default AddEvent;
+export default SharePhoto;

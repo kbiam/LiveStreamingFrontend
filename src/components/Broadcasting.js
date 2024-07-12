@@ -2,7 +2,10 @@ import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import { socket } from "../socket";
 import { useNavigate } from "react-router-dom";
-const serverUrl=process.env.REACT_APP_BASE_URL
+import Share from "./Share";
+const serverUrl=process.env.REACT_APP_SOCKET_URL
+
+
 
 const Broadcasting = () => {
   const [streamUrl, setStreamUrl] = useState(null);
@@ -197,6 +200,9 @@ const Broadcasting = () => {
         >
          {`${streamer} is on live `} 
         </button>
+        <Share
+            description={`I am sharing this interesting event happened !! Check out the details and join us here:`}
+          />
     </div>
     :
     <div className="watch-on">
@@ -204,7 +210,9 @@ const Broadcasting = () => {
         <button className="account-btn" id="live-stream" onClick={startStreamingAndRecording}>
           StartLiveStreaming
         </button>
+
       ) : (
+        <>
         <button
           className="account-btn"
           id="stop-stream"
@@ -212,6 +220,10 @@ const Broadcasting = () => {
         >
           Stop Stream
         </button>
+        <Share
+        description={`I am sharing this interesting event happeening !! Check out the details and join us here:`}
+      />
+      </>
       )}
       {/* <video id="video" autoPlay playsInline controls></video> */}
     </div>

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useLocation } from 'react-router-dom';
-const serverUrl = process.env.REACT_APP_BASE_URL;
+const serverUrl=process.env.REACT_APP_SOCKET_URL
 
 const Viewer = () => {
   const location = useLocation();

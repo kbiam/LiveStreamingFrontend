@@ -28,13 +28,16 @@ const AddVideo = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if(!video || videoPerc!=100){
+      alert("video is uploading please wait");
+      return;
+    }
+    if(videoName.length==0){
+      alert("please add eventName");
+      return;
+    }
     try {
-      if(!video){
-        alert("please add img");return;
-      }
-      if(videoName.length==0){
-        alert("please add eventName");return;
-      }
+      
       setLoading(1)
       fetch(`${process.env.REACT_APP_BASE_URL}/api/addVideo`, {
           method: 'POST',
