@@ -161,7 +161,7 @@ const EventPage = () => {
              
             </div>
           </section>
-          // <Chat />
+          
         </div>
       </main>
     </div>
