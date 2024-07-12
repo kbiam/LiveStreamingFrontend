@@ -139,7 +139,6 @@ const EventPage = () => {
           </section>
          
         </div>
-        <br/><br/><br/>
               <h2 id="recordings" className="section-title">Recordings</h2>
               <div className="scrollable">
                 <div id="carouselExampleControlsVideos">
@@ -172,4 +171,5 @@ const EventPage = () => {
 };
 
 export default EventPage;
+
 
