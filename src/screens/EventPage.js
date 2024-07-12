@@ -9,7 +9,7 @@ import { useLocation } from 'react-router-dom';
 import Header from '../components/Header';
 import { useNavigate } from 'react-router-dom';
 import SideBar from '../components/SideBar';
-import { socket } from '../socket';
+
 import Videos from '../components/Videos';
 import Viewer from '../components/Viewer';
 
@@ -91,7 +91,6 @@ const EventPage = () => {
   
   useEffect(() => {
     fetchUser();
-    if(localStorage.getItem('token')) socket.emit('join', localStorage.getItem('token'));
     adminStatus();
     liveStatus();
     move();
@@ -135,7 +134,12 @@ const EventPage = () => {
               {/* <Functionallity /> */}
               <Broadcasting />
               <Viewer/>
-              <br/><br/><br/>
+             
+            </div>
+          </section>
+         
+        </div>
+        <br/><br/><br/>
               <h2 id="recordings" className="section-title">Recordings</h2>
               <div className="scrollable">
                 <div id="carouselExampleControlsVideos">
@@ -159,10 +163,6 @@ const EventPage = () => {
               <h2 className="section-title">Social Media Posts</h2>
               <MediaPost />
              
-            </div>
-          </section>
-          
-        </div>
       </main>
     </div>
     </>
@@ -172,3 +172,4 @@ const EventPage = () => {
 };
 
 export default EventPage;
+
