@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import SideNav from './SideNav';
 import AddEvent from './AddEvent';
 import AdminProfile from './AdminProfile';
-// import AllUsers from './AllUsers';
+import AllUsers from './AllUsers';
 
 const SideBar = () => {
   const [area, setArea] = useState(0);
@@ -25,7 +25,7 @@ const SideBar = () => {
       case 3:
         return <AddAdmin />;
       case 4:
-        return;
+        return <AllUsers/>;
       default:
         return <div>Select an option from the menu</div>;
     }

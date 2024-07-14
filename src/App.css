@@ -768,4 +768,39 @@ a {
     color: #333;
     font-weight: bold;
   }
+
+  /* userCard */
+
+  .search-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    width: 100%;
+  }
+  
+  .search-icon {
+    margin-right: 8px;
+    font-size: 1.2em;
+    color: #888;
+  }
+  
+  .search-input {
+    flex-grow: 1;
+    padding: 10px;
+    font-size: 1em;
+    width: calc(100% - 40px);
+  }
+  
+  .user-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+    padding: 20px;
+  }
+  
+  .user-cards .card {
+    margin: 10px;
+    max-width: 300px;
+  }
   
