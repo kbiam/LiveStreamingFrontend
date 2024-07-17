@@ -12,8 +12,8 @@ import {
 } from 'react-share';
 
 
-const Share = ({ description }) => {
-  const url = window.location.href;
+const Share = ({ description, viewUrl }) => {
+  const url = viewUrl;
   return (
     <div className="share-container">
       <div className="share-icon-collections">

@@ -13,6 +13,7 @@ import SideBar from './components/SideBar';
 import Viewer from './components/Viewer';
 import AddVideo from './components/AddVideo';
 import SharePhoto from './components/SharePhoto';
+import StartStream from './components/StartStream';
 
 function App() {
   return (
@@ -21,7 +22,9 @@ function App() {
       <div>
         <Routes>
           <Route exact path="/" element={<EventPage />}/>
-          <Route exact path='/view-stream' element = {<EventPage />}/>
+          <Route path='/start-stream' element = {<StartStream />}/>
+          <Route path='/view-stream/:streamId' element = {<EventPage />}/>
+          {/* <Route exact path='/view-stream' element = {<EventPage />}/> */}
           <Route exact path='/addVideo' element = {<AddVideo />}/>
           <Route exact path='/shareImage' element = {<SharePhoto />}/>
           {/* <Route exact path="/LiveStreaming" element={<Stream />}/> */}

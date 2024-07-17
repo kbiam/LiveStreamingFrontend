@@ -12,7 +12,7 @@ import Images from '../components/Images';
 
 const EventPage = () => {
   const location = useLocation();
-  const { streamId } = useParams();
+  // const { streamId } = useParams();
   let navigate = useNavigate();
   const [admin, setAdmin] = useState(0);
   const [live, setLive] = useState(0);
@@ -75,9 +75,9 @@ const EventPage = () => {
     if (response.success) alert("Streaming ended");
   }
 
-  const move = () => {
-    if (admin !== 1 && live && currentUser !== streamer) navigate("/view-stream");
-  }
+  // const move = () => {
+  //   if (admin !== 1 && live && currentUser !== streamer) navigate("/view-stream");
+  // }
 
   const shareVideo = () => {
     if (!authToken) {
@@ -132,7 +132,7 @@ const EventPage = () => {
                   </div>
                 </div>
                 
-                <Viewer streamerId={streamId} />
+                <Broadcasting/>
               </div>
             </section>
           </div>

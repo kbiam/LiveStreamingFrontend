@@ -1,17 +1,15 @@
 import React, { useEffect, useRef } from 'react';
 import axios from 'axios';
-import { useLocation } from 'react-router-dom';
-const serverUrl=process.env.REACT_APP_SOCKET_URL
-
-const Viewer = () => {
-  const location = useLocation();
+import { useLocation, useParams } from 'react-router-dom';
+import { serverUrl } from '../helper/Helper';
+const Viewer = ({streamerId}) => {
   const peerRef = useRef();
 
   useEffect(() => {
-    if (location.pathname === "/view-stream") {
+    if (streamerId) {
       watchStream();
     }
-  }, [location.pathname]);
+  }, [streamerId]);
 
   const watchStream = () => {
     try {
@@ -41,7 +39,8 @@ const Viewer = () => {
       const offer = await peer.createOffer();
       await peer.setLocalDescription(offer);
       const payload = { sdp: peer.localDescription };
-      const { data } = await axios.post(`${serverUrl}/consumer`, payload);
+      console.log(payload.sdp, "sending");
+      const { data } = await axios.post(`${serverUrl}/consumer/${streamerId}`, payload.sdp);
       const desc = new RTCSessionDescription(data.sdp);
       await peer.setRemoteDescription(desc);
     } catch (error) {
@@ -51,15 +50,17 @@ const Viewer = () => {
 
   const handleTrackEvent = async (e) => {
     const video = document.getElementById("video");
-    video.srcObject = await e.streams[0];
+    console.log("setting video")
+    video.srcObject = e.streams[0];
   };
 
   const handleICECandidateEvent = async (event) => {
     if (event.candidate) {
       try {
-        await axios.post(`${serverUrl}/ice-candidate`, {
+        console.log("ice", streamerId)
+        await axios.post(`${serverUrl}/ice-candidate/${streamerId}`, {
           candidate: event.candidate,
-          role: 'consumer',
+          role: 'consumer'
         });
       } catch (error) {
         console.error("Error sending ICE candidate:", error);
@@ -69,12 +70,7 @@ const Viewer = () => {
 
   return (
     <div className="watch-on">
-      <video 
-        autoPlay 
-        playsInline 
-        id="video" 
-        style={{ display: 'block', width: '0%', height: '0%', margin: 0, padding: 0 }} 
-      ></video>
+      <video autoPlay playsInline id="video"></video>
     </div>
   );
 };

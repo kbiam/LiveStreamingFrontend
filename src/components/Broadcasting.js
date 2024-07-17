@@ -3,8 +3,7 @@ import axios from "axios";
 import { socket } from "../socket";
 import { useNavigate } from "react-router-dom";
 import Share from "./Share";
-const serverUrl=process.env.REACT_APP_SOCKET_URL
-
+import { serverUrl } from "../helper/Helper";
 
 
 const Broadcasting = () => {
@@ -14,71 +13,70 @@ const Broadcasting = () => {
   const chunksRef = useRef([]);
   const streamRef = useRef(null);
   const peerRef = useRef();
-  let navigate=useNavigate();
+  const [streamerId, setStreamerId] = useState(null);
 
-  const [live,setLive]=useState(0);
-  const [streamer,setStreamer]=useState("");
-  const [currentUser,setCurrentUser]=useState("")
-  const authToken=localStorage.getItem('token')
+  const [live, setLive] = useState(0);
+  const [streamer, setStreamer] = useState("");
+  const [currentUser, setCurrentUser] = useState("");
+  const authToken = localStorage.getItem('token');
+  const navigate = useNavigate();
 
   const fetchUser = async () => {
-    if(!authToken) return;
-    await fetch(`${process.env.REACT_APP_BASE_URL}/api/getUserDetails/${authToken}/${0}`, {
-        method: 'GET',
-        headers: {'Content-Type': 'application/json'}
-    }).then(async (res) => {
-        let response= await res.json();
-        console.log("data",response.data);
-        if(response.success) setCurrentUser(response.data._id)
-    })
-  }
-  
-  const liveStatus=async ()=>{
-    fetch(`${process.env.REACT_APP_BASE_URL}/api/liveStatus`, {
+    if (!authToken) return;
+    const res = await fetch(`${process.env.REACT_APP_BASE_URL}/api/getUserDetails/${authToken}/${0}`, {
       method: 'GET',
-      headers:{'Content-Type':'application/json'}
-      }).then(async (res) => {
-        let response = await res.json();
-        if (response){
-           setLive(response.live);
-           setStreamer(response.id)
-        }
-      });
-  }
-  const startLive=async ()=>{
-    fetch(`${process.env.REACT_APP_BASE_URL}/api/startLive`, {
+      headers: {'Content-Type': 'application/json'}
+    });
+    const response = await res.json();
+    if (response.success) setCurrentUser(response.data._id);
+  };
+
+  // const liveStatus = async () => {
+  //   const res = await fetch(`${process.env.REACT_APP_BASE_URL}/api/liveStatus`, {
+  //     method: 'GET',
+  //     headers: {'Content-Type': 'application/json'}
+  //   });
+  //   const response = await res.json();
+  //   if (response) {
+  //     setLive(response.live);
+  //     setStreamer(response.id);
+  //   }
+  // };
+
+  const startLive = async () => {
+    const res = await fetch(`${process.env.REACT_APP_BASE_URL}/api/startLive`, {
       method: 'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({id:authToken})
-      }).then(async (res) => {
-        let response = await res.json();
-        console.log(response);
-      });
-  }
-  const stopLive=async ()=>{
-    fetch(`${process.env.REACT_APP_BASE_URL}/api/stopLive`, {
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({id: authToken})
+    });
+    const response = await res.json();
+    console.log(response);
+  };
+
+  const stopLive = async () => {
+    const res = await fetch(`${process.env.REACT_APP_BASE_URL}/api/stopLive`, {
       method: 'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({id:authToken})
-      }).then(async (res) => {
-        let response = await res.json();
-        if (response.success) alert("Streaming ended");
-        window.location.reload();
-      });
-  }
-  
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({id: authToken})
+    });
+    const response = await res.json();
+    if (response.success) alert("Streaming ended");
+    window.location.reload();
+  };
+
   const startStreamingAndRecording = async () => {
-    if(!localStorage.getItem('token')){
-      alert("please logIn first!");
-      return;
-    }
-    navigate("/")
-    liveStatus();
-    startLive();
-    if(live==1){
-      alert("a user is already in live , you can't create meet")
-    }
-   try {
+    let localStreamerId
+    // if (!authToken) {
+    //   alert("Please log in first!");
+    //   return;
+    // }
+    // await liveStatus();
+    await startLive();
+    // if (live === 1) {
+    //   alert("A user is already live, you can't create a meet");
+    //   return;
+    // }
+    try {
       const constraints = {
         video: {
           width: { ideal: 1280 },
@@ -100,8 +98,12 @@ const Broadcasting = () => {
       stream.getTracks().forEach((track) => peer.addTrack(track, stream));
       videoElement.srcObject = stream;
 
-      const streamLink = `${serverUrl}/view-stream`;
-      setStreamUrl(streamLink);
+      // const response = await axios.post(`${serverUrl}/generate-stream-id`);
+      // localStreamerId = response.data.streamerId
+      // // console.log(response.data.streamerId)
+      // setStreamerId(localStreamerId);
+
+      // setStreamUrl(`localhost:3000/view-stream/${response.data.streamerId}`);
       setIsStreaming(true);
 
       const mediaRecorder = new MediaRecorder(stream, {
@@ -117,7 +119,6 @@ const Broadcasting = () => {
     }
   };
 
- 
   const stopStreamingAndDownload = () => {
     if (mediaRecorderRef.current) {
       mediaRecorderRef.current.stop();
@@ -160,12 +161,24 @@ const Broadcasting = () => {
 
   const handleNegotiationNeededEvent = async (peer) => {
     try {
+      let localStreamerId = streamerId;
+
+      if (localStreamerId === null) {
+        const response = await axios.post(`${serverUrl}/generate-stream-id`);
+        localStreamerId = response.data.streamerId;
+        setStreamerId(localStreamerId);
+        console.log(streamerId)
+        setStreamUrl(`localhost:3000/view-stream/${localStreamerId}`);
+      }
       const offer = await peer.createOffer();
       await peer.setLocalDescription(offer);
       const payload = { sdp: peer.localDescription };
-      const { data } = await axios.post(`${serverUrl}/broadcast`, payload);
-      const desc = new RTCSessionDescription(data.sdp);
-      await peer.setRemoteDescription(desc);
+
+      if (localStreamerId) {
+        const { data } = await axios.post(`${serverUrl}/broadcast/${localStreamerId}`, payload);
+        const desc = new RTCSessionDescription(data.sdp);
+        await peer.setRemoteDescription(desc);
+      }
     } catch (error) {
       console.error("Error handling negotiation:", error);
     }
@@ -174,7 +187,8 @@ const Broadcasting = () => {
   const handleICECandidateEvent = async (event) => {
     if (event.candidate) {
       try {
-        await axios.post(`${serverUrl}/ice-candidate`, {
+        console.log("ice",streamerId)
+        await axios.post(`${serverUrl}/ice-candidate/${streamerId}`, {
           candidate: event.candidate,
           role: 'broadcaster'
         });
@@ -184,50 +198,51 @@ const Broadcasting = () => {
     }
   };
 
-  useEffect(() => {
-    if(localStorage.getItem('token')) socket.emit('join', localStorage.getItem('token'));
-    liveStatus();
-    fetchUser();
-  }, [live]);
-  console.log("boroadcasting",live , currentUser,streamer);
+  // useEffect(() => {
+  //   if (authToken) socket.emit('join', authToken);
+  //   liveStatus();
+  //   fetchUser();
+  // }, [live]);
+
   return (
     <>
-    {live==1 && currentUser!=streamer?
-    <div className="watch-on">
-      <button
-          className="account-btn"
-          id="live-stream"
-        >
-         {`${streamer} is on live `} 
-        </button>
-        <Share
-            description={`I am sharing this interesting event happened !! Check out the details and join us here:`}
+      {/* {live === 1 && currentUser !== streamer ? (
+        <div className="watch-on">
+          <button className="account-btn" id="live-stream">
+            {`${streamer} is live`}
+          </button>
+          <Share
+            description={`I am sharing this interesting event! Check out the details and join us here:`}
+            viewUrl={streamUrl}
           />
-    </div>
-    :
-    <div className="watch-on">
-      {!isStreaming ? (
-        <button className="account-btn" id="live-stream" onClick={startStreamingAndRecording}>
-          StartLiveStreaming
-        </button>
-
-      ) : (
-        <>
-        <button
-          className="account-btn"
-          id="stop-stream"
-          onClick={stopStreamingAndDownload}
-        >
-          Stop Stream
-        </button>
-        <Share
-        description={`I am sharing this interesting event happeening !! Check out the details and join us here:`}
-      />
-      </>
-      )}
-      {/* <video id="video" autoPlay playsInline controls></video> */}
-    </div>
-    }
+        </div>
+      )  */}
+      {/* : ( */}
+        <div className="watch-on">
+          {!isStreaming ? (
+            <button className="account-btn" id="live-stream" onClick={startStreamingAndRecording}>
+              Start Live Streaming
+            </button>
+          ) : (
+            <>
+              <button
+                className="account-btn"
+                id="stop-stream"
+                onClick={stopStreamingAndDownload}
+              >
+                Stop Streaming
+              </button>
+              <Share
+                description={`I am sharing this interesting event! Check out the details and join us here:`}
+                viewUrl={streamUrl}
+              />
+            </>
+          )}
+        </div>
+      {/* )} */}
+      <div className="video-container">
+        <video id="video" autoPlay muted></video>
+      </div>
     </>
   );
 };

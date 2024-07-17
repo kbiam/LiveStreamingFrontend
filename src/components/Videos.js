@@ -7,6 +7,7 @@ const Videos = () => {
   const [videoData, setVideosData] = useState([]);
 
   const getVideos = () => {
+    console.log("fetching videos")
     fetch(`${process.env.REACT_APP_BASE_URL}/api/getVides`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' }
