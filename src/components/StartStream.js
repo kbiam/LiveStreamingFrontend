@@ -80,10 +80,10 @@ const EventPage = () => {
   // }
 
   const shareVideo = () => {
-    if (!authToken) {
-      alert("Please login first!!");
-      return;
-    }
+    // if (!authToken) {
+    //   alert("Please login first!!");
+    //   return;
+    // }
     navigate("/addVideo");
   }
 
