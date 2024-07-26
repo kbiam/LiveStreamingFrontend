@@ -13,6 +13,7 @@ import Images from '../components/Images';
 const EventPage = () => {
   const location = useLocation();
   const { streamId } = useParams();
+  console.log("streamId",streamId)
   let navigate = useNavigate();
   const [admin, setAdmin] = useState(0);
   const [live, setLive] = useState(0);

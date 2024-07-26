@@ -7,6 +7,7 @@ const Viewer = ({streamerId}) => {
 
   useEffect(() => {
     if (streamerId) {
+      console.log(streamerId)
       watchStream();
     }
   }, [streamerId]);
@@ -51,6 +52,7 @@ const Viewer = ({streamerId}) => {
   const handleTrackEvent = async (e) => {
     const video = document.getElementById("video");
     console.log("setting video")
+    console.log(video)
     video.srcObject = e.streams[0];
   };
 
