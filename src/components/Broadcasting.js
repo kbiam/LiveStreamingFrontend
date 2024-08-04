@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import Share from "./Share";
 import { serverUrl } from "../helper/Helper";
 
-
 const Broadcasting = () => {
   const [streamUrl, setStreamUrl] = useState(null);
   const [isStreaming, setIsStreaming] = useState(false);
@@ -31,18 +30,6 @@ const Broadcasting = () => {
     if (response.success) setCurrentUser(response.data._id);
   };
 
-  // const liveStatus = async () => {
-  //   const res = await fetch(`${process.env.REACT_APP_BASE_URL}/api/liveStatus`, {
-  //     method: 'GET',
-  //     headers: {'Content-Type': 'application/json'}
-  //   });
-  //   const response = await res.json();
-  //   if (response) {
-  //     setLive(response.live);
-  //     setStreamer(response.id);
-  //   }
-  // };
-
   const startLive = async () => {
     const res = await fetch(`${process.env.REACT_APP_BASE_URL}/api/startLive`, {
       method: 'POST',
@@ -65,17 +52,7 @@ const Broadcasting = () => {
   };
 
   const startStreamingAndRecording = async () => {
-    let localStreamerId
-    // if (!authToken) {
-    //   alert("Please log in first!");
-    //   return;
-    // }
-    // await liveStatus();
     await startLive();
-    // if (live === 1) {
-    //   alert("A user is already live, you can't create a meet");
-    //   return;
-    // }
     try {
       const constraints = {
         video: {
@@ -93,17 +70,12 @@ const Broadcasting = () => {
       streamRef.current = stream;
 
       const videoElement = document.getElementById("video");
-      const peer = createPeer();
+      const peer = await createPeer();
+      console.log("peer", peer);
       peerRef.current = peer;
       stream.getTracks().forEach((track) => peer.addTrack(track, stream));
       videoElement.srcObject = stream;
 
-      // const response = await axios.post(`${serverUrl}/generate-stream-id`);
-      // localStreamerId = response.data.streamerId
-      // // console.log(response.data.streamerId)
-      // setStreamerId(localStreamerId);
-
-      // setStreamUrl(`localhost:3000/view-stream/${response.data.streamerId}`);
       setIsStreaming(true);
 
       const mediaRecorder = new MediaRecorder(stream, {
@@ -148,33 +120,35 @@ const Broadcasting = () => {
     stopLive();
   };
 
-  const createPeer = () => {
-    const peer = new RTCPeerConnection({
+  const createPeer = async () => {
+    const peer = await new RTCPeerConnection({
       iceServers: [{ urls: "stun:stun.stunprotocol.org" }],
     });
 
-    peer.onicecandidate = handleICECandidateEvent;
-    peer.onnegotiationneeded = () => handleNegotiationNeededEvent(peer);
+    let localStreamerId = streamerId;
+    if (localStreamerId === null) {
+      const response = await axios.post(`${serverUrl}/generate-stream-id`);
+      localStreamerId = response.data.streamerId;
+      setStreamerId(localStreamerId);
+      console.log("streamerID", localStreamerId);
+      setStreamUrl(`localhost:3000/view-stream/${localStreamerId}`);
+    }
+
+    const streamIDfromFUNC = localStreamerId;
+    peer.onicecandidate = (event) => handleICECandidateEvent(event, streamIDfromFUNC);
+    peer.onnegotiationneeded = () => handleNegotiationNeededEvent(peer, streamIDfromFUNC);
 
     return peer;
   };
 
-  const handleNegotiationNeededEvent = async (peer) => {
+  const handleNegotiationNeededEvent = async (peer, localStreamerId) => {
     try {
-      let localStreamerId = streamerId;
-
-      if (localStreamerId === null) {
-        const response = await axios.post(`${serverUrl}/generate-stream-id`);
-        localStreamerId = response.data.streamerId;
-        setStreamerId(localStreamerId);
-        console.log(streamerId)
-        setStreamUrl(`localhost:3000/view-stream/${localStreamerId}`);
-      }
       const offer = await peer.createOffer();
       await peer.setLocalDescription(offer);
       const payload = { sdp: peer.localDescription };
 
       if (localStreamerId) {
+        console.log("Broadcasting request");
         const { data } = await axios.post(`${serverUrl}/broadcast/${localStreamerId}`, payload);
         const desc = new RTCSessionDescription(data.sdp);
         await peer.setRemoteDescription(desc);
@@ -184,11 +158,11 @@ const Broadcasting = () => {
     }
   };
 
-  const handleICECandidateEvent = async (event) => {
+  const handleICECandidateEvent = async (event, streamIDfromFUNC) => {
     if (event.candidate) {
       try {
-        console.log("ice",streamerId)
-        await axios.post(`${serverUrl}/ice-candidate/${streamerId}`, {
+        console.log("ice", streamIDfromFUNC);
+        await axios.post(`${serverUrl}/ice-candidate/${streamIDfromFUNC}`, {
           candidate: event.candidate,
           role: 'broadcaster'
         });
@@ -198,48 +172,43 @@ const Broadcasting = () => {
     }
   };
 
-  // useEffect(() => {
-  //   if (authToken) socket.emit('join', authToken);
-  //   liveStatus();
-  //   fetchUser();
-  // }, [live]);
+  useEffect(() => {
+    const handleIncomingICECandidate = async (data) => {
+      try {
+        if (peerRef.current && data.streamerId === streamerId && data.role === 'consumer') {
+          await peerRef.current.addIceCandidate(new RTCIceCandidate(data.candidate));
+        }
+      } catch (error) {
+        console.error("Error adding received ICE candidate:", error);
+      }
+    };
+
+    socket.on('new-ice-candidate', handleIncomingICECandidate);
+
+    return () => {
+      socket.off('new-ice-candidate', handleIncomingICECandidate);
+    };
+  }, [streamerId]);
 
   return (
     <>
-      {/* {live === 1 && currentUser !== streamer ? (
-        <div className="watch-on">
-          <button className="account-btn" id="live-stream">
-            {`${streamer} is live`}
+      <div className="watch-on">
+        {!isStreaming ? (
+          <button className="account-btn" id="live-stream" onClick={startStreamingAndRecording}>
+            Start Live Streaming
           </button>
-          <Share
-            description={`I am sharing this interesting event! Check out the details and join us here:`}
-            viewUrl={streamUrl}
-          />
-        </div>
-      )  */}
-      {/* : ( */}
-        <div className="watch-on">
-          {!isStreaming ? (
-            <button className="account-btn" id="live-stream" onClick={startStreamingAndRecording}>
-              Start Live Streaming
+        ) : (
+          <>
+            <button className="account-btn" id="stop-stream" onClick={stopStreamingAndDownload}>
+              Stop Streaming
             </button>
-          ) : (
-            <>
-              <button
-                className="account-btn"
-                id="stop-stream"
-                onClick={stopStreamingAndDownload}
-              >
-                Stop Streaming
-              </button>
-              <Share
-                description={`I am sharing this interesting event! Check out the details and join us here:`}
-                viewUrl={streamUrl}
-              />
-            </>
-          )}
-        </div>
-      {/* )} */}
+            <Share
+              description={`I am sharing this interesting event! Check out the details and join us here:`}
+              viewUrl={streamUrl}
+            />
+          </>
+        )}
+      </div>
       <div className="video-container">
         <video id="video" autoPlay muted></video>
       </div>
