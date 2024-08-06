@@ -56,12 +56,13 @@ const Viewer = () => {
       const offer = await peer.createOffer();
       await peer.setLocalDescription(offer);
       const payload = { sdp: peer.localDescription };
-      console.log("Sending offer:", payload.sdp);
+      console.log("Sending offer:", JSON.stringify(payload.sdp));
       const { data } = await axios.post(`${serverUrl}/consumer/${streamId}`, payload.sdp);
-      console.log("Received answer:", data.sdp);
+      console.log("Received answer:", JSON.stringify(data.sdp));
       const desc = new RTCSessionDescription(data.sdp);
       await peer.setRemoteDescription(desc);
       setIsConnected(true);
+      console.log("WebRTC connection established");
     } catch (error) {
       console.error("Error handling negotiation:", error);
       setError("Failed to establish connection. The stream might not be available.");
@@ -71,24 +72,32 @@ const Viewer = () => {
   const handleTrackEvent = (e) => {
     console.log("Received track:", e.track);
     const [stream] = e.streams;
+    if (!stream) {
+      console.error("No stream received in track event");
+      return;
+    }
+    
     if (videoRef.current) {
       if (!videoRef.current.srcObject) {
         videoRef.current.srcObject = stream;
-        stream.onaddtrack = () => {
-          console.log("New track added");
-          videoRef.current.play().catch(console.error);
-        }
         console.log("Set video srcObject:", stream);
-
+        videoRef.current.play().catch(err => console.error("Error playing video:", err));
       } else {
         const currentStream = videoRef.current.srcObject;
         if (!currentStream.getTracks().includes(e.track)) {
           currentStream.addTrack(e.track);
+          console.log("Added new track to existing stream");
         }
       }
     } else {
       console.error("Video element not found");
     }
+    
+    // Log stream and track information
+    console.log("Stream tracks:", stream.getTracks());
+    stream.getTracks().forEach(track => {
+      console.log(`Track ${track.id} of kind ${track.kind} is ${track.enabled ? 'enabled' : 'disabled'}`);
+    });
   };
 
   const handleICECandidateEvent = async (event) => {
@@ -133,7 +142,7 @@ const Viewer = () => {
 
   return (
     <div className="watch-on">
-      <video autoPlay playsInline ref={videoRef}></video>
+      <video autoPlay muted playsInline ref={videoRef}></video>
     </div>
   );
 };

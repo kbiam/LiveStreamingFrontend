@@ -116,6 +116,7 @@ const EventPage = () => {
                     controls
                     className="live-stream"
                     autoPlay
+                    muted
                     playsInline
                     {...(location.pathname !== "/view-stream" && { muted: true })}
                     id="video"
